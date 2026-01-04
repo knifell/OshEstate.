@@ -1,3 +1,4 @@
+console.log("!!! СКРИПТ ЗАГРУЖЕН И РАБОТАЕТ !!!");
 // Подключаем Firebase через Интернет
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -490,4 +491,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         box.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     };
+
 });
