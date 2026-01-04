@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали объявления - OshEstate</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Osh<span>Estate</span></a>
+            <ul class="nav-links" id="nav-links-container"></ul>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <div id="property-content" class="container section" style="padding-top: 40px;">
+        
+        <div class="property-header">
+            <div>
+                <span id="detail-badge" class="badge-static">Продажа</span>
+                <h1 id="detail-title">Загрузка заголовка...</h1>
+                <p class="detail-address"><i class="fas fa-map-marker-alt"></i> <span id="detail-address">Адрес...</span></p>
+            </div>
+            <div class="detail-price-box">
+                <div id="detail-price" class="detail-price">0 сом</div>
+                <div class="detail-subprice">Цена окончательная</div>
+            </div>
+        </div>
+
+        <div class="property-grid">
+            
+            <div class="property-main">
+                <div class="detail-image">
+                    <img id="detail-img" src="" alt="Фото недвижимости">
+                </div>
+
+                <div class="card-style detail-block">
+                    <h3>Описание</h3>
+                    <p id="detail-desc">Описание отсутствует.</p>
+                </div>
+
+                <div class="card-style detail-block">
+                    <h3>Характеристики</h3>
+                    <ul class="detail-specs" id="detail-specs">
+                        </ul>
+                </div>
+            </div>
+
+            <div class="property-sidebar">
+                <div class="card-style agent-card">
+                    <h3>Контактное лицо</h3>
+                    <div class="agent-info">
+                        <div class="agent-avatar"><i class="fas fa-user"></i></div>
+                        <div>
+                            <h4 id="detail-author">Имя продавца</h4>
+                            <p style="color:#777; font-size:0.9rem;">На сайте OshEstate</p>
+                        </div>
+                    </div>
+                    
+                    <div id="contact-placeholder">
+                        <p style="font-size:0.9rem; margin-bottom:10px; color:#e74c3c;">
+                            <i class="fas fa-lock"></i> Войдите, чтобы увидеть номер
+                        </p>
+                        <a href="login.html" class="btn-submit" style="display:block; text-align:center; text-decoration:none;">Войти</a>
+                    </div>
+                    
+                    <div id="contact-real" style="display:none;">
+                        <a href="#" class="btn-phone"><i class="fas fa-phone"></i> <span id="detail-phone">0555 00 00 00</span></a>
+                        <a href="#" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> Написать в WhatsApp</a>
+                    </div>
+                </div>
+
+                <div class="card-style" style="margin-top: 20px;">
+                    <h3>Безопасность</h3>
+                    <ul style="font-size: 0.9rem; color: #555; list-style: disc; padding-left: 20px;">
+                        <li>Не отправляйте предоплату</li>
+                        <li>Встречайтесь в людном месте</li>
+                        <li>Проверяйте документы</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h3>OshEstate</h3>
+                <p>Ваш надежный партнер.</p>
+            </div>
+            <div class="footer-bottom">&copy; 2025 OshEstate.</div>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
