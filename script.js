@@ -71,7 +71,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Б) ЛОГИКА РЕГИСТРАЦИИ (КНОПКА КОДА)
+    // Б) ЛОГИКА РЕГИСТРАЦИИ (КНОПКА КОДА - ЕСЛИ ЕСТЬ В JS)
+    // (Основная логика кнопок теперь в register.html, но это на всякий случай)
     const btnGetCode = document.getElementById('btnGetCode');
     if (btnGetCode) {
         btnGetCode.addEventListener('click', () => {
@@ -85,22 +86,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // В) ОТПРАВКА ФОРМЫ РЕГИСТРАЦИИ
+    // В) ОТПРАВКА ФОРМЫ РЕГИСТРАЦИИ (ИСПРАВЛЕНО)
     const regForm = document.getElementById('registerForm');
     if (regForm) {
         regForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if(document.getElementById('verifyCode').value !== '1234') return alert('Неверный код!');
+            e.preventDefault(); // Остановить перезагрузку страницы
+            
+            if(document.getElementById('verifyCode').value !== '1234') {
+                return alert('Неверный код подтверждения!');
+            }
             
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
             const name = document.getElementById('regName').value;
 
             try {
+                // 1. Создаем пользователя
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                // 2. Добавляем имя
                 await updateProfile(cred.user, { displayName: name });
-                window.location.href = 'index.html';
-            } catch (err) { alert("Ошибка: " + err.message); }
+                
+                // 3. УСПЕХ! Показываем сообщение и переходим
+                alert("Регистрация успешна! Нажмите ОК для перехода на главную.");
+                window.location.replace('index.html'); // Используем replace для надежности
+                
+            } catch (err) { 
+                console.error(err);
+                // Понятные ошибки
+                if(err.message.includes('email-already-in-use')) {
+                    alert("Ошибка: Этот Email уже зарегистрирован!");
+                } else {
+                    alert("Ошибка: " + err.message); 
+                }
+            }
         });
     }
 
@@ -114,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
                 window.location.href = 'index.html';
-            } catch (err) { alert("Ошибка входа: " + err.message); }
+            } catch (err) { alert("Ошибка входа: Неверная почта или пароль"); }
         });
     }
 
@@ -139,7 +157,6 @@ async function loadAds() {
     const grid = document.getElementById('listings-container');
     const adminList = document.getElementById('fullAdminList');
     
-    // Если нам некуда выводить данные, не грузим их
     if (!grid && !adminList && document.body.dataset.page !== 'profile') return;
 
     try {
@@ -148,7 +165,6 @@ async function loadAds() {
         ads = [];
         snap.forEach(doc => ads.push({ id: doc.id, ...doc.data() }));
         
-        // Обновляем нужные блоки
         if (grid) renderGrid(ads);
         if (document.body.dataset.page === 'profile') renderMyAds();
         if (adminList) renderAdminList();
@@ -184,14 +200,13 @@ function renderGrid(data) {
     if(!grid) return;
     grid.innerHTML = '';
 
-    // Фильтр страницы
     const pageType = document.body.dataset.page;
     if (pageType === 'sale' || pageType === 'rent') {
         data = data.filter(ad => ad.type === pageType && ad.status === 'active');
     } else if (pageType === 'favorites') {
         data = data.filter(ad => favorites.includes(ad.id));
     } else if (pageType === 'home') {
-        data = data.filter(ad => ad.status === 'active').slice(0, 6); // Только 6 последних на главной
+        data = data.filter(ad => ad.status === 'active').slice(0, 6); 
     }
 
     if (data.length === 0) { grid.innerHTML = '<div style="padding:40px; text-align:center;">Нет данных</div>'; return; }
@@ -224,15 +239,10 @@ function initMap() {
     
     map.on('click', async (e) => {
         if (!KG_BOUNDS.contains(e.latlng)) return alert("Только Кыргызстан!");
-        
-        // Очистка старых маркеров
         map.eachLayer((layer) => { if(layer instanceof L.Marker) map.removeLayer(layer); });
         L.marker(e.latlng).addTo(map);
-        
         document.getElementById('inputLat').value = e.latlng.lat;
         document.getElementById('inputLng').value = e.latlng.lng;
-        
-        // Геокодинг
         try {
             const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
             const d = await r.json();
@@ -244,7 +254,6 @@ function initMap() {
 async function handleAddAd(e) {
     e.preventDefault();
     if(!document.getElementById('inputLat').value) return alert("Поставьте точку на карте!");
-    
     const fileInput = document.getElementById('inputImageFile');
     const images = await Promise.all([...fileInput.files].map(f => new Promise(r => {
         const rd = new FileReader(); rd.onload=ev=>r(ev.target.result); rd.readAsDataURL(f);
@@ -279,7 +288,6 @@ function renderMyAds() {
     const list = document.getElementById('myAdsList');
     if(!list) return;
     
-    // Показать шапку профиля
     const header = document.getElementById('profileHeader');
     if(header) {
         header.innerHTML = `
@@ -326,19 +334,13 @@ async function loadDetail() {
             document.getElementById('detail-address').innerText = ad.address;
             document.getElementById('detail-price').innerText = `${ad.price} сом`;
             document.getElementById('detail-desc').innerText = ad.description;
-            
-            // Карта
             if(ad.lat) {
                 const map = L.map('map-view').setView([ad.lat, ad.lng], 15);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
                 L.marker([ad.lat, ad.lng]).addTo(map);
             }
-            
-            // Слайдер (простой)
             const mainImg = document.getElementById('sliderMainImg');
             if(ad.images && ad.images.length) mainImg.src = ad.images[0];
-            
-            // Контакты
             if(currentUser) {
                 document.getElementById('contact-placeholder').style.display = 'none';
                 document.getElementById('contact-real').style.display = 'block';
@@ -372,13 +374,12 @@ function renderAdminList() {
     });
 }
 
-// --- 11. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (Экспорт в window) ---
+// --- 11. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
 window.toggleLang = () => {
     const next = currentLang === 'ru' ? 'kg' : 'ru';
     localStorage.setItem('oshEstate_lang', next);
     location.reload();
 };
-
 window.toggleFav = (id, btn) => {
     if(event) event.stopPropagation();
     if(!currentUser) return window.location.href = 'login.html';
@@ -387,22 +388,17 @@ window.toggleFav = (id, btn) => {
     localStorage.setItem('oshEstate_favs', JSON.stringify(favorites));
     if(btn) btn.classList.toggle('active');
 };
-
 window.logout = () => signOut(auth).then(() => window.location.href = 'index.html');
-
 window.approveAd = async (id) => {
     await updateDoc(doc(db, "ads", id), { status: 'active' });
     loadAds();
 };
-
 window.deleteAd = async (id) => {
     if(confirm('Удалить?')) {
         await deleteDoc(doc(db, "ads", id));
         loadAds();
     }
 };
-
-// Переводы
 function applyTranslations() {
     const texts = {
         ru: { nav_home: "Главная", nav_buy: "Купить", nav_rent: "Снять", nav_login: "Войти", nav_reg: "Регистрация", nav_add: "+ Подать" },
