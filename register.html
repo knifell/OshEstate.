@@ -12,13 +12,12 @@
     <nav class="navbar">
         <div class="container nav-container">
             <a href="index.html" class="logo">Osh<span>Estate</span></a>
-            <ul class="nav-links" id="nav-links-container">
+            <ul class="nav-links">
                 <li><a href="index.html">Главная</a></li>
                 <li><a href="buy.html">Купить</a></li>
                 <li><a href="rent.html">Снять</a></li>
                 <li><a href="login.html">Войти</a></li>
             </ul>
-            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
         </div>
     </nav>
 
@@ -26,7 +25,7 @@
         <div class="card-style" style="max-width: 450px; margin: 20px auto;">
             <h2 style="text-align: center; margin-bottom: 25px;">Регистрация</h2>
 
-            <form id="registerForm">
+            <div id="regContainer">
                 
                 <div id="step-1">
                     <div class="form-group">
@@ -37,53 +36,99 @@
                         <label>Email</label>
                         <input type="email" id="regEmail" placeholder="email@example.com" required>
                     </div>
-                    <div class="form-group">
-                        <label>Телефон</label>
-                        <input type="tel" id="regPhone" placeholder="0555 123 456">
-                    </div>
                     
-                    <button type="button" id="btnGetCode" class="btn-submit">Получить код</button>
+                    <button id="btnGetCode" class="btn-submit">Получить код</button>
                     
-                    <p style="text-align: center; margin-top: 15px; font-size: 0.9rem;">
+                    <p style="text-align: center; margin-top: 15px;">
                         Есть аккаунт? <a href="login.html" style="color: var(--accent);">Войти</a>
                     </p>
                 </div>
 
                 <div id="step-2" style="display: none;">
                     <div class="form-group">
-                        <label>Код из СМС (Введите: 1234)</label>
+                        <label>Код из СМС (1234)</label>
                         <input type="text" id="verifyCode" placeholder="Код">
                     </div>
                     <div class="form-group">
-                        <label>Придумайте пароль (мин. 6 символов)</label>
+                        <label>Пароль (мин. 6 символов)</label>
                         <input type="password" id="regPass" placeholder="******">
                     </div>
                     
-                    <button type="submit" class="btn-submit">Завершить</button>
+                    <button id="btnFinish" class="btn-submit">Завершить</button>
                 </div>
 
-            </form>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Этот код работает мгновенно, без ожидания Firebase
-        document.getElementById('btnGetCode').addEventListener('click', function() {
+    <script type="module">
+        // 1. Импорт Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // 2. Твои ключи
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWdTARaKOoJO9S5dhp5e2jZTVkmoFahUw",
+            authDomain: "estateosh.firebaseapp.com",
+            projectId: "estateosh",
+            storageBucket: "estateosh.firebasestorage.app",
+            messagingSenderId: "567119988498",
+            appId: "1:567119988498:web:1ba784ff48d19f2c9395cb",
+            measurementId: "G-3LFNLFZYD2"
+        };
+
+        // 3. Запуск
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 4. Логика кнопок
+        const btnGetCode = document.getElementById('btnGetCode');
+        const btnFinish = document.getElementById('btnFinish');
+
+        // Кнопка "Получить код"
+        btnGetCode.addEventListener('click', () => {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
 
             if(!name || !email) {
-                alert("Пожалуйста, введите Имя и Email");
+                alert("Заполните Имя и Email!");
                 return;
             }
-
+            
             alert("Ваш код: 1234");
             document.getElementById('step-1').style.display = 'none';
             document.getElementById('step-2').style.display = 'block';
         });
+
+        // Кнопка "Завершить"
+        btnFinish.addEventListener('click', async () => {
+            const code = document.getElementById('verifyCode').value;
+            const pass = document.getElementById('regPass').value;
+            const email = document.getElementById('regEmail').value;
+            const name = document.getElementById('regName').value;
+
+            if(code !== '1234') return alert("Неверный код!");
+            if(pass.length < 6) return alert("Пароль слишком короткий!");
+
+            btnFinish.innerText = "Регистрация..."; // Показать, что процесс идет
+            
+            try {
+                // Создаем юзера в Firebase
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                // Добавляем имя
+                await updateProfile(userCred.user, { displayName: name });
+
+                alert("УСПЕШНО! Сейчас вы перейдете на главную.");
+                window.location.href = "index.html";
+                
+            } catch (error) {
+                console.error(error);
+                let msg = error.message;
+                if(msg.includes('email-already-in-use')) msg = "Этот Email уже занят!";
+                alert("Ошибка: " + msg);
+                btnFinish.innerText = "Завершить";
+            }
+        });
     </script>
-
-    <script type="module" src="script.js"></script>
-
 </body>
 </html>
