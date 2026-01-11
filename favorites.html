@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Избранное - OshEstate</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body data-page="favorites"> <div id="toast-container"></div>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Osh<span>Estate</span></a>
+            <ul class="nav-links" id="nav-links-container"></ul>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <div class="page-header" style="background: #e74c3c;"> <div class="container">
+            <h1><i class="fas fa-heart"></i> Избранное</h1>
+            <p>Сохраненные вами объявления</p>
+        </div>
+    </div>
+
+    <section class="container section">
+        <div class="listings-grid" id="listings-container">
+            <div class="loader">Загрузка...</div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h3>OshEstate</h3>
+                <p>Ваш надежный партнер.</p>
+            </div>
+            <div class="footer-bottom">&copy; 2025 OshEstate.</div>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
