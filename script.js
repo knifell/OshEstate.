@@ -1,5 +1,5 @@
 /* ========================================================================
-   ФИНАЛЬНЫЙ СКРИПТ: OSH ESTATE + FIREBASE (ESTATEOSH)
+   ФИНАЛЬНЫЙ СКРИПТ: OSH ESTATE + FIREBASE (ИСПРАВЛЕННЫЙ)
    ======================================================================== */
 
 // --- 1. ИМПОРТ FIREBASE ---
@@ -26,7 +26,7 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 2. КОНФИГУРАЦИЯ (ИЗ ТВОЕГО СКРИНШОТА) ---
+// --- 2. ТВОЯ КОНФИГУРАЦИЯ (ESTATEOSH) ---
 const firebaseConfig = {
     apiKey: "AIzaSyBWdTARaKOoJO9S5dhp5e2jZTVkmoFahUw",
     authDomain: "estateosh.firebaseapp.com",
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // --- 5. ФУНКЦИИ ---
+    // --- 5. ФУНКЦИИ (HELPER) ---
 
     async function fetchAds() {
         const grid = document.getElementById('listings-container');
@@ -411,16 +411,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =======================================================
     // 8. АДМИНКА
     // =======================================================
-    const adminPageForm = document.getElementById('adminPageLoginForm');
-    if (adminPageForm) {
-        adminPageForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if(document.getElementById('adminPagePass').value === 'admin') {
-                localStorage.setItem(ADMIN_AUTH_KEY, 'true'); window.location.href = 'index.html'; 
-            } else { alert('Error'); }
-        });
-    }
-
+    // Логика входа в админку перенесена в сам login.html для надежности.
+    // Тут только работа со списком:
     if (document.getElementById('fullAdminList')) {
         if(document.getElementById('adminLogoutBtn')) {
             document.getElementById('adminLogoutBtn').addEventListener('click', () => {
@@ -531,10 +523,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         else if (pageType === 'favorites') { 
             if (!currentUser) window.location.href = 'login.html'; 
             else {
-                // При загрузке фильтруем
                 const loadFavs = setInterval(() => {
                     if (ads.length > 0) {
-                        renderGrid(ads.filter(ad => favorites.includes(ad.id)));
+                        window.renderGrid(ads.filter(ad => favorites.includes(ad.id)));
                         clearInterval(loadFavs);
                     }
                 }, 500);
@@ -587,27 +578,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadOneAd();
     }
 
-    // AUTH
+    // --- ИСПРАВЛЕННЫЙ БЛОК РЕГИСТРАЦИИ И ВХОДА ---
     const regForm = document.getElementById('registerForm');
     if (regForm) {
-        document.getElementById('btnGetCode').onclick = () => {
-             document.getElementById('step-1').style.display='none'; 
-             document.getElementById('step-2').style.display='block';
-             alert('Code: 1234');
-        };
+        // Мы используем addEventListener для кнопки, чтобы она точно работала
+        const btnGetCode = document.getElementById('btnGetCode');
+        if (btnGetCode) {
+            btnGetCode.addEventListener('click', () => {
+                 const name = document.getElementById('regName').value.trim();
+                 const email = document.getElementById('regEmail').value.trim();
+                 if (!name || !email) {
+                     alert('Пожалуйста, заполните Имя и Email');
+                     return;
+                 }
+                 alert('Ваш код подтверждения: 1234');
+                 document.getElementById('step-1').style.display = 'none'; 
+                 document.getElementById('step-2').style.display = 'block';
+            });
+        }
+
         regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(document.getElementById('verifyCode').value !== '1234') return alert('Error code');
+            if(document.getElementById('verifyCode').value !== '1234') {
+                return alert('Неверный код!');
+            }
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
             const name = document.getElementById('regName').value;
+            
             try {
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 await updateProfile(userCred.user, { displayName: name });
                 window.location.href = 'index.html';
-            } catch(e) { alert(e.message); }
+            } catch(e) { 
+                console.error(e);
+                alert("Ошибка регистрации: " + e.message); 
+            }
         });
     }
+
     const loginForm = document.getElementById('loginForm');
     if(loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -617,7 +626,10 @@ document.addEventListener('DOMContentLoaded', async () => {
              try {
                  await signInWithEmailAndPassword(auth, email, pass);
                  window.location.href = 'index.html';
-             } catch(e) { alert(t('auth_err')); }
+             } catch(e) { 
+                 console.error(e);
+                 alert(t('auth_err') + ": " + e.message); 
+             }
         });
     }
 
