@@ -16,20 +16,47 @@
         
         <h2 style="margin-bottom: 20px; color: #333;">Вход для персонала</h2>
 
-        <form id="adminPageLoginForm">
-            <div class="form-group" style="margin-bottom: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div class="form-group" style="margin-bottom: 0;">
                 <label style="text-align: left;">Пароль администратора</label>
-                <input type="password" id="adminPagePass" placeholder="Введите пароль" 
+                <input type="password" id="adminPassInput" placeholder="Введите пароль" 
                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; text-align: center;">
             </div>
-            <button type="submit" class="btn-submit">Войти в панель</button>
-        </form>
+            
+            <button type="button" onclick="checkPass()" class="btn-submit">Войти в панель</button>
+        </div>
 
         <a href="../index.html" style="display: block; margin-top: 20px; color: #7f8c8d; font-size: 0.9rem;">
             &larr; Вернуться на сайт
         </a>
     </div>
 
-    <script type="module" src="../script.js"></script>
+    <script>
+        // Простая функция проверки пароля
+        function checkPass() {
+            const input = document.getElementById('adminPassInput');
+            const pass = input.value.trim();
+
+            // ПАРОЛЬ: admin
+            if (pass === 'admin') {
+                // Сохраняем "ключ" в браузере, что мы вошли
+                localStorage.setItem('oshAdminLoggedIn', 'true');
+                
+                // Переходим на главную страницу админки
+                window.location.href = 'index.html';
+            } else {
+                alert('Неверный пароль! Попробуйте: admin');
+                input.value = ''; // Очистить поле
+                input.focus();
+            }
+        }
+
+        // Чтобы работала клавиша Enter
+        document.getElementById('adminPassInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkPass();
+            }
+        });
+    </script>
 </body>
 </html>
