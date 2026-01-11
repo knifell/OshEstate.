@@ -31,7 +31,7 @@
                 <div id="step-1">
                     <div class="form-group">
                         <label>Ваше имя</label>
-                        <input type="text" id="regName" placeholder="Иван Иванов" required>
+                        <input type="text" id="regName" placeholder="Иван" required>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
@@ -45,32 +45,43 @@
                     <button type="button" id="btnGetCode" class="btn-submit">Получить код</button>
                     
                     <p style="text-align: center; margin-top: 15px; font-size: 0.9rem;">
-                        Уже есть аккаунт? <a href="login.html" style="color: var(--accent); font-weight: bold;">Войти</a>
+                        Есть аккаунт? <a href="login.html" style="color: var(--accent);">Войти</a>
                     </p>
                 </div>
 
-                <div id="step-2" style="display: none; animation: fadeInUp 0.5s;">
+                <div id="step-2" style="display: none;">
                     <div class="form-group">
-                        <label>Код из СМС (Тест: 1234)</label>
-                        <input type="text" id="verifyCode" placeholder="Введите 1234">
+                        <label>Код из СМС (Введите: 1234)</label>
+                        <input type="text" id="verifyCode" placeholder="Код">
                     </div>
                     <div class="form-group">
-                        <label>Придумайте пароль</label>
+                        <label>Придумайте пароль (мин. 6 символов)</label>
                         <input type="password" id="regPass" placeholder="******">
                     </div>
                     
-                    <button type="submit" class="btn-submit">Зарегистрироваться</button>
+                    <button type="submit" class="btn-submit">Завершить</button>
                 </div>
 
             </form>
         </div>
     </div>
 
-    <footer>
-        <div class="container footer-content">
-            <div class="footer-bottom">&copy; 2026 OshEstate.</div>
-        </div>
-    </footer>
+    <script>
+        // Этот код работает мгновенно, без ожидания Firebase
+        document.getElementById('btnGetCode').addEventListener('click', function() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+
+            if(!name || !email) {
+                alert("Пожалуйста, введите Имя и Email");
+                return;
+            }
+
+            alert("Ваш код: 1234");
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+        });
+    </script>
 
     <script type="module" src="script.js"></script>
 
